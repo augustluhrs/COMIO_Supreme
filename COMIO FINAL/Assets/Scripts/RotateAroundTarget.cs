@@ -6,6 +6,8 @@ public class RotateAroundTarget : MonoBehaviour
     public Transform target; // The target to rotate around and look at
     [SerializeField] private int knobNumber = 0;
     public AudioSource[] audioSources; // An array of AudioSources whose pitch you want to change
+    public bool usingMidi = false;
+    public float fixedSpeed = 1.0f;
 
     // Define the range of pitch values you'd like to use:
     private const float minPitch = -3.0f;  // Slowest pitch (can adjust)
@@ -15,12 +17,15 @@ public class RotateAroundTarget : MonoBehaviour
     {
         if (target == null) return;
 
-        float knobValue = MidiMaster.GetKnob(knobNumber, 0); 
-        float mappedValue = Remap(knobValue, 0, 1, -30, 30);
+            float knobValue = MidiMaster.GetKnob(knobNumber, 0); 
+            float mappedValue = Remap(knobValue, 0, 1, -30, 30);
 
-        // Rotate around the target
-        transform.RotateAround(target.position, Vector3.up, mappedValue * Time.deltaTime);
-
+        if(usingMidi == true){
+            // Rotate around the target
+            transform.RotateAround(target.position, Vector3.up, mappedValue * Time.deltaTime);
+        }else{
+            transform.RotateAround(target.position, Vector3.up, fixedSpeed * Time.deltaTime);
+        }
         // Look at the target
         transform.LookAt(target);
 
