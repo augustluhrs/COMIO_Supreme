@@ -25,7 +25,6 @@ public class OSC_DistanceBasedOpacityMult : MonoBehaviour
 
     private void Update()
     {
-        
         CheckDistance(IncomingPelvisPosition);
     }
 
