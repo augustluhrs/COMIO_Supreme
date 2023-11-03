@@ -42,6 +42,7 @@ public class BodyDataManager : MonoBehaviour
     OscServer _server;
     public Vector3 incomingPelvisPos = new Vector3(0, 0, 0); //hmm
     public Vector3 incomingRightHandPos = new Vector3(0, 0, 0); //hmm
+    public Vector3 incomingLeftHandPos = new Vector3(0, 0, 0); //hmm
     public bool isCalibrating = true;
     CalibrationProfileManager calib;
 
@@ -169,7 +170,8 @@ public class BodyDataManager : MonoBehaviour
                 if (isCalibrating)
                 {
                     incomingPelvisPos = jointPositions[0];
-                    incomingRightHandPos = jointPositions[15]; //TODO double check
+                    incomingRightHandPos = jointPositions[15];
+                    incomingLeftHandPos = jointPositions[8]; //TODO double check
                 } else
                 {
                     // //map the positions to the calibrated scale
@@ -206,13 +208,13 @@ public class BodyDataManager : MonoBehaviour
             {
                 Debug.Log(i);
                 Vector3 jointPos = jointPositions[i];
-                Debug.Log(jointPos);
+                // Debug.Log(jointPos);
                 float mapped_x, mapped_y, mapped_z;
                 mapped_x = Map(jointPos.x, calib.kinect_x_min, calib.kinect_x_max, calib.stage_x_min, calib.stage_x_max);
                 mapped_y = Map(jointPos.y, calib.kinect_y_min, calib.kinect_y_max, calib.stage_y_min, calib.stage_y_max);
                 mapped_z = Map(jointPos.z, calib.kinect_z_min, calib.kinect_z_max, calib.stage_z_min, calib.stage_z_max);
                 mappedJointPositions[i] = new Vector3(mapped_x, mapped_y, mapped_z);
-                Debug.Log(mappedJointPositions[i]);
+                // Debug.Log(mappedJointPositions[i]);
             }
             for(int i = 0; i < 32; i++){
                 joints[i].transform.localPosition = mappedJointPositions[i];

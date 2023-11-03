@@ -6,10 +6,8 @@ using System.Collections;
 public class ThresholdPopup : MonoBehaviour
 {
     [SerializeField] RawImage imageToCheck; // Reference to the RawImage
-    [SerializeField] List<RawImage> otherImagesToCheck; // List of other RawImages
     [SerializeField] RawImage popupRawImage; // Reference to the RawImage you want to show/hide
     public float alphaThreshold = 0.5f;
-    public float otherImagesAlphaThreshold = 0.2f; // Threshold for other images
     public float cooldownTime = 30f;
     public float displayDuration = 5f;
     public float fadeDuration = 1f; // Duration for the fade effect
@@ -40,19 +38,9 @@ public class ThresholdPopup : MonoBehaviour
     {
         float currentAlpha = imageToCheck.color.a;
 
-        // Check the alpha values of other images
-        bool allBelowThreshold = true;
-        foreach (var image in otherImagesToCheck)
-        {
-            if (image.color.a >= otherImagesAlphaThreshold)
-            {
-                allBelowThreshold = false;
-                break;
-            }
-        }
 
         // Check threshold based on RawImage's alpha and other images' alpha values
-        if (!isCooldown && currentAlpha > alphaThreshold && allBelowThreshold)
+        if (!isCooldown && currentAlpha > alphaThreshold )
         {
             TriggerPopup();
         }

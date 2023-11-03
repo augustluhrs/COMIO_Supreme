@@ -1,57 +1,57 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class OSC_DistanceBasedOpacityMult : MonoBehaviour
 {
     [Header("Canvas Control")]
-    public RawImage targetImage; // The UI canvas element whose transparency you want to control.
-
-    [Header("Distance Control")]
-    public float maxDistanceForTransparency = 1.0f; // Distance threshold for opacity change.
-
-    [Header("OSC Receivers")]
-    public List<GameObject> oscReceivers; // List of OSC receivers to monitor.
-
-    public Transform distanceCheckTarget; //
+    public RawImage targetImage;
     
-    private float furthestDistance = 0.0f;
+    public float Range = 0.0f;
+    public float smoothFactor = 5.0f;  // Controls the speed of smoothing.
+
+    public float currentDistance = 0.0f;
+    public float opacityValue = 0.0f;
+
+    public Vector3 IncomingPelvisPosition = new Vector3(0, 0, 0);
+    public Vector3 originHolder = new Vector3(-1.0f, 0, 0);
+
+    private float targetOpacity = 0.0f;  // Target value after calculation.
+
+
+    private void Start()
+    {
+        IncomingPelvisPosition = GameObject.Find("AvatarManager").GetComponent<BodyDataManager>().incomingPelvisPos;
+    }
 
     private void Update()
     {
-        furthestDistance = 0.0f;
+        CheckDistance(IncomingPelvisPosition);
+    }
 
-        // Iterate through all OSC Transforms and calculate distances.
-        foreach (var oscReceiver in oscReceivers)
+    private void CheckDistance(Vector3 oscReceiverPosition)
+    {
+        
+        float distanceToTarget = Vector3.Distance(oscReceiverPosition, originHolder);
+        currentDistance = distanceToTarget;
+
+        if(distanceToTarget < Range)
         {
-            if (oscReceiver == null)
-            {
-                // Skip null references.
-                continue;
-            }
-
-            // Calculate distance from the OSC object to the distanceCheckTarget.
-            float distanceToTarget = Vector3.Distance(oscReceiver.transform.position, distanceCheckTarget.position);
-
-            if (distanceToTarget <= maxDistanceForTransparency)
-            {
-                // Update the furthest distance within the threshold.
-                furthestDistance = Mathf.Max(furthestDistance, distanceToTarget);
-            }
-            
+            targetOpacity = 1 - (distanceToTarget / Range);
+        }
+        else
+        {
+            targetOpacity = 0.0f;  // If distance is beyond range, make it transparent.
         }
 
-        // Calculate opacity based on the furthest distance within the threshold.
-        float opacityValue = 1 - (furthestDistance / maxDistanceForTransparency);
+        // Smoothing the opacity change over time.
+        opacityValue = Mathf.Lerp(opacityValue, targetOpacity, smoothFactor * Time.deltaTime);
         SetOpacity(opacityValue);
     }
 
     private void SetOpacity(float value)
     {
         Color currentColor = targetImage.color;
-        currentColor.a = Mathf.Clamp01(value); // Ensure value is between 0 and 1.
+        currentColor.a = Mathf.Clamp01(value);
         targetImage.color = currentColor;
     }
-
-    // You can add OSC receivers to the list using the Unity Inspector.
 }
