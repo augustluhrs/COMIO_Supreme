@@ -33,7 +33,7 @@ public class MidiOpacityControl : MonoBehaviour
         if (popupRawImage != null)
         {
             audioSource = popupRawImage.gameObject.GetComponent<AudioSource>();
-            popupRawImage.gameObject.SetActive(false);
+            popupRawImage.gameObject.SetActive(true);
         }
         else
         {
@@ -51,16 +51,16 @@ public class MidiOpacityControl : MonoBehaviour
         }
 
         // Check to trigger popup again after cooldown
-        float currentAlpha = controllingImage.color.a;
-        bool shouldPopup = currentAlpha >= popupThreshold;
-        if (!isCooldown && shouldPopup)
-        {
-            TriggerPopup();
-        }
-        else if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
-        {
-            isCooldown = false;
-        }
+        // float currentAlpha = controllingImage.color.a;
+        // bool shouldPopup = currentAlpha >= popupThreshold;
+        // if (!isCooldown && shouldPopup)
+        // {
+        //     TriggerPopup();
+        // }
+        // else if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
+        // {
+        //     isCooldown = false;
+        // }
     }
 
     public void OnMidiKnobValueChanged(float newValue)
@@ -84,10 +84,10 @@ public class MidiOpacityControl : MonoBehaviour
             }
         }
 
-        if (!isCooldown && shouldPopup)
-        {
-            TriggerPopup();
-        }
+        // if (!isCooldown && shouldPopup)
+        // {
+        //     TriggerPopup();
+        // }
 
         if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
         {
@@ -95,22 +95,22 @@ public class MidiOpacityControl : MonoBehaviour
         }
     }
 
-    private void TriggerPopup()
-    {
-        if (popupRawImage != null)
-        {
-            Color rawImageColor = popupRawImage.color;
-            popupRawImage.color = new Color(rawImageColor.r, rawImageColor.g, rawImageColor.b, 1f);
-            popupRawImage.gameObject.SetActive(true);
-            if (audioSource != null)
-            {
-                audioSource.Play();
-            }
-            timeOfLastPopup = Time.time;
-            isCooldown = true;
-            Invoke("StartFadeOut", displayDuration);
-        }
-    }
+    // private void TriggerPopup()
+    // {
+    //     if (popupRawImage != null)
+    //     {
+    //         Color rawImageColor = popupRawImage.color;
+    //         popupRawImage.color = new Color(rawImageColor.r, rawImageColor.g, rawImageColor.b, 1f);
+    //         popupRawImage.gameObject.SetActive(true);
+    //         if (audioSource != null)
+    //         {
+    //             audioSource.Play();
+    //         }
+    //         timeOfLastPopup = Time.time;
+    //         isCooldown = true;
+    //         Invoke("StartFadeOut", displayDuration);
+    //     }
+    // }
 
     private void StartFadeOut()
     {

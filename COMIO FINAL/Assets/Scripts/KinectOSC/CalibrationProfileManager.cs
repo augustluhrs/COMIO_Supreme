@@ -39,12 +39,12 @@ public class CalibrationProfileManager : MonoBehaviour
     //calibrated range for mapping in BodyDataManager
     //default values used until calibration profile loaded or more specific values come in
     //in map, x values need to flip? TODO, might just work? will store kinect value regardless of polarity, but x_min is unity coord space (left)
-    public float kinect_x_min = -1.25f;
-    public float kinect_x_max = 1.25f;
-    public float kinect_y_min = -0.75f;
-    public float kinect_y_max = 1.15f;
+    public float kinect_x_min = 1.02f;
+    public float kinect_x_max = -1.19f;
+    public float kinect_y_min = -0.65f;
+    public float kinect_y_max = 1.07f;
     public float kinect_z_min = 1.25f;
-    public float kinect_z_max = 3.55f;
+    public float kinect_z_max = 3.76f;
     //the positions of the calibration points on the stage
     public float stage_x_min;
     public float stage_x_max;
@@ -233,6 +233,15 @@ public class CalibrationProfileManager : MonoBehaviour
 
         //toggle the bool in bodyDataManager so the mapping will take effect and show
         bodyDataManager.isCalibrating = false;
+
+        //print to console so we can manually use positions to calibrate for now before we get profiles working
+        Debug.Log("kinect X min: " + kinect_x_min);
+        Debug.Log("kinect X max: " + kinect_x_max);
+        Debug.Log("kinect Y min: " + kinect_y_min);
+        Debug.Log("kinect Y max: " + kinect_y_max);
+        Debug.Log("kinect Z min: " + kinect_z_min);
+        Debug.Log("kinect Z max: " + kinect_z_max);
+
     }
 
     public void ClearReadings(int point)

@@ -234,10 +234,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showDemoCubes: 1
   demoCube: {fileID: 3591878993700696234, guid: 378d85756e267574ea697a4fd930969d, type: 3}
-  cubeScale: 0.1
-  jointTrackingSlots: []
+  cubeScale: 0.7
+  headTracker: {fileID: 0}
+  handLeftTracker: {fileID: 0}
+  handRightTracker: {fileID: 0}
+  pelvisTracker: {fileID: 0}
+  footLeftTracker: {fileID: 0}
+  footRightTracker: {fileID: 0}
+  renderFaderPoint1: {fileID: 0}
+  renderFaderPoint2: {fileID: 0}
+  renderFaderPoint3: {fileID: 0}
+  renderFaderPoint4: {fileID: 0}
+  renderFaderPoint5: {fileID: 0}
+  renderFaderPoint6: {fileID: 0}
+  renderFaderPoint7: {fileID: 0}
+  renderFaderPoint8: {fileID: 0}
   incomingPelvisPos: {x: 0, y: 0, z: 0}
   incomingRightHandPos: {x: 0, y: 0, z: 0}
+  incomingLeftHandPos: {x: 0, y: 0, z: 0}
   isCalibrating: 1
 --- !u!114 &8090835466048534943
 MonoBehaviour:
