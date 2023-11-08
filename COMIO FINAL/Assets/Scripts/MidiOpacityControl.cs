@@ -15,11 +15,11 @@ public class MidiOpacityControl : MonoBehaviour
     public List<ImageControlGroup> controlGroups = new List<ImageControlGroup>();
     [SerializeField] RawImage popupRawImage;
     public int midiKnobNumber = 0;
-    public float popupThreshold = 0.5f;
-    public float deactivationThreshold = 0.5f;
-    public float cooldownTime = 30f;
-    public float displayDuration = 5f;
-    public float fadeDuration = 1f;
+    public float popupThreshold = 0.9f;
+    public float deactivationThreshold = 0.1f;
+    public float cooldownTime = 1f;
+    public float displayDuration = 0.5f;
+    public float fadeDuration = 0.4f;
 
     private AudioSource audioSource;
     private float timeOfLastPopup;
@@ -27,13 +27,13 @@ public class MidiOpacityControl : MonoBehaviour
     private float lastMidiValue;
     private RawImage controllingImage;
 
-    private void Awake()
+    private void Start()
     {
         controllingImage = GetComponent<RawImage>();
         if (popupRawImage != null)
         {
             audioSource = popupRawImage.gameObject.GetComponent<AudioSource>();
-            popupRawImage.gameObject.SetActive(true);
+            popupRawImage.gameObject.SetActive(false);
         }
         else
         {
@@ -51,43 +51,44 @@ public class MidiOpacityControl : MonoBehaviour
         }
 
         // Check to trigger popup again after cooldown
-        // float currentAlpha = controllingImage.color.a;
-        // bool shouldPopup = currentAlpha >= popupThreshold;
-        // if (!isCooldown && shouldPopup)
-        // {
-        //     TriggerPopup();
-        // }
-        // else if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
-        // {
-        //     isCooldown = false;
-        // }
+        if (!isCooldown && controllingImage.color.a >= popupThreshold)
+        {
+            TriggerPopup();
+        }
+        else if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
+        {
+            isCooldown = false;
+        }
     }
 
     public void OnMidiKnobValueChanged(float newValue)
     {
+        if (float.IsNaN(newValue))
+        {
+            Debug.LogError("Midi value is NaN, cannot update alpha.");
+            return;
+        }
+
         Color color = controllingImage.color;
         color.a = newValue;
         controllingImage.color = color;
-
-        float currentAlpha = controllingImage.color.a;
-        bool shouldActivate = currentAlpha >= deactivationThreshold;
-        bool shouldPopup = currentAlpha >= popupThreshold;
 
         foreach (ImageControlGroup group in controlGroups)
         {
             foreach (GameObject obj in group.targetObjects)
             {
-                if (obj.activeSelf != shouldActivate)
+                bool shouldBeActive = newValue >= deactivationThreshold;
+                if (obj.activeSelf != shouldBeActive)
                 {
-                    obj.SetActive(shouldActivate);
+                    obj.SetActive(shouldBeActive);
                 }
             }
         }
 
-        // if (!isCooldown && shouldPopup)
-        // {
-        //     TriggerPopup();
-        // }
+        if (!isCooldown && newValue >= popupThreshold)
+        {
+            TriggerPopup();
+        }
 
         if (isCooldown && Time.time - timeOfLastPopup > cooldownTime)
         {
@@ -95,22 +96,28 @@ public class MidiOpacityControl : MonoBehaviour
         }
     }
 
-    // private void TriggerPopup()
-    // {
-    //     if (popupRawImage != null)
-    //     {
-    //         Color rawImageColor = popupRawImage.color;
-    //         popupRawImage.color = new Color(rawImageColor.r, rawImageColor.g, rawImageColor.b, 1f);
-    //         popupRawImage.gameObject.SetActive(true);
-    //         if (audioSource != null)
-    //         {
-    //             audioSource.Play();
-    //         }
-    //         timeOfLastPopup = Time.time;
-    //         isCooldown = true;
-    //         Invoke("StartFadeOut", displayDuration);
-    //     }
-    // }
+    private void TriggerPopup()
+    {
+        if (popupRawImage != null)
+        {
+            Color rawImageColor = popupRawImage.color;
+            if (!IsValidColor(rawImageColor))
+            {
+                Debug.LogError("Invalid color detected: " + rawImageColor);
+                return;
+            }
+
+            popupRawImage.color = new Color(rawImageColor.r, rawImageColor.g, rawImageColor.b, 1f);
+            popupRawImage.gameObject.SetActive(true);
+            if (audioSource != null)
+            {
+                audioSource.Play();
+            }
+            timeOfLastPopup = Time.time;
+            isCooldown = true;
+            Invoke("StartFadeOut", displayDuration);
+        }
+    }
 
     private void StartFadeOut()
     {
@@ -125,15 +132,26 @@ public class MidiOpacityControl : MonoBehaviour
         if (popupRawImage != null)
         {
             float fadeSpeed = 1 / fadeDuration;
+            Color startColor = popupRawImage.color;
 
             while (popupRawImage.color.a > 0)
             {
                 float newAlpha = popupRawImage.color.a - fadeSpeed * Time.deltaTime;
-                popupRawImage.color = new Color(popupRawImage.color.r, popupRawImage.color.g, popupRawImage.color.b, newAlpha);
+                if (float.IsNaN(newAlpha))
+                {
+                    Debug.LogError("New alpha is NaN during fade out.");
+                    newAlpha = 0;  // Reset to 0 to avoid breaking the game
+                }
+                popupRawImage.color = new Color(startColor.r, startColor.g, startColor.b, newAlpha);
                 yield return null;
             }
 
             popupRawImage.gameObject.SetActive(false);
         }
+    }
+
+    private bool IsValidColor(Color color)
+    {
+        return !float.IsNaN(color.r) && !float.IsNaN(color.g) && !float.IsNaN(color.b) && !float.IsNaN(color.a);
     }
 }

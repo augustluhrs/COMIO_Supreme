@@ -24,6 +24,9 @@ public class BodyDataManager : MonoBehaviour
     public float cubeScale = 0.5f;
     public bool isUsingFullSkeleton = false;
 
+    private float fixedUpdateCounter = 0f;
+    private const float interval = 1f;
+
     [Header("JOINT REFERENCES FOR AVATAR")]
     // public GameObject[] jointTrackingSlots; //to assign gameobjects whose transforms we want to match these joints
     public GameObject headTracker;
@@ -76,6 +79,7 @@ public class BodyDataManager : MonoBehaviour
     public Vector3 incomingRightHandPos = new Vector3(0, 0, 0); //hmm
     public Vector3 incomingLeftHandPos = new Vector3(0, 0, 0); //hmm
     public bool isCalibrating = false; //false for testing, using captured calibration
+
     CalibrationProfileManager calib;
 
     void Awake(){
@@ -165,6 +169,7 @@ public class BodyDataManager : MonoBehaviour
                 GameObject cubeObject = Instantiate(demoCube, joint.transform.position, joint.transform.rotation);
                 cubeObject.transform.parent = joint.transform;
                 cubeObject.transform.localScale = new Vector3(cubeScale, cubeScale, cubeScale);
+                Destroy(cubeObject.GetComponent<BoxCollider>());
             }
         } else 
         {
@@ -175,6 +180,7 @@ public class BodyDataManager : MonoBehaviour
                     GameObject cubeObject = Instantiate(demoCube, joints[i].transform.position, joints[i].transform.rotation);
                     cubeObject.transform.parent = joints[i].transform;
                     cubeObject.transform.localScale = new Vector3(cubeScale, cubeScale, cubeScale);
+                    Destroy(cubeObject.GetComponent<BoxCollider>());
                 }
             }
         }
@@ -218,6 +224,8 @@ public class BodyDataManager : MonoBehaviour
                         // } 
                     }
                 }
+
+
 
                 if (!isBody) {return;}
                 //if past this point, we have a joint label, param, and val
@@ -290,6 +298,11 @@ public class BodyDataManager : MonoBehaviour
      // Update is called once per frame
     void Update()
     {
+    
+        // this is so the render fader value only gets sent processed once per second
+        fixedUpdateCounter += Time.fixedDeltaTime;
+
+
         //update gameObject transforms -- TODO check for optimization
         if (isCalibrating)
         {
@@ -341,13 +354,32 @@ public class BodyDataManager : MonoBehaviour
                 }
             }
 
+
+/// WHERE WE NEED TO ASSIGN THE LOCATION OF THE TRACKERS
+
+            // headTracker.transform.localPosition =   new Vector3(mappedJointPositions[26].x * magnitudeVar, mappedJointPositions[26].y * magnitudeVar, mappedJointPositions[26].z * magnitudeVar);
+            // pelvisTracker.transform.localPosition = new Vector3(mappedJointPositions[0].x * magnitudeVar, mappedJointPositions[0].y * magnitudeVar, mappedJointPositions[0].z * magnitudeVar);
+            // handLeftTracker.transform.localPosition =  new Vector3(mappedJointPositions[15].x * magnitudeVar, mappedJointPositions[15].y * magnitudeVar, mappedJointPositions[15].z * magnitudeVar);
+            // handRightTracker.transform.localPosition =  new Vector3(mappedJointPositions[8].x * magnitudeVar, mappedJointPositions[8].y * magnitudeVar, mappedJointPositions[8].z * magnitudeVar);
+            // footLeftTracker.transform.localPosition =  new Vector3(mappedJointPositions[21].x * magnitudeVar, mappedJointPositions[21].y * magnitudeVar, mappedJointPositions[21].z * magnitudeVar);
+            // footRightTracker.transform.localPosition = new Vector3(mappedJointPositions[25].x * magnitudeVar, mappedJointPositions[25].y * magnitudeVar, mappedJointPositions[25].z * magnitudeVar);
+            // Debug.Log(mappedJointPositions[26]);
+
+            // headTracker.transform.localPosition = mappedJointPositions[26];
+            // // pelvisTracker.transform.localPosition = new Vector3(0, 5, 0);
+            // pelvisTracker.transform.localPosition = mappedJointPositions[0];
+            // handLeftTracker.transform.localPosition =  mappedJointPositions[15];
+            // handRightTracker.transform.localPosition = mappedJointPositions[8];
+            // footLeftTracker.transform.localPosition = mappedJointPositions[21];
+            // footRightTracker.transform.localPosition = mappedJointPositions[25];
+
+
             headTracker.transform.localPosition = mappedJointPositions[26];
-            pelvisTracker.transform.localPosition = mappedJointPositions[0];
-            handLeftTracker.transform.localPosition = mappedJointPositions[15];
+            pelvisTracker.transform.localPosition =  mappedJointPositions[0];
+            handLeftTracker.transform.localPosition =  mappedJointPositions[15];
             handRightTracker.transform.localPosition = mappedJointPositions[8];
             footLeftTracker.transform.localPosition = mappedJointPositions[21];
             footRightTracker.transform.localPosition = mappedJointPositions[25];
-
             
         }
         
@@ -362,29 +394,10 @@ public class BodyDataManager : MonoBehaviour
         //check max closeness of both hands
         //output normalized value where 0 is both hands are on opposite side
         //1 is either hand is on top of the land point
-        if (isRenderFaderOn)
+        if (isRenderFaderOn && fixedUpdateCounter > interval)
         {
-            Vector3 leftHandPos = mappedJointPositions[8];
-            Vector3 rightHandPos = mappedJointPositions[15];
-            for (int i = 0; i < 8; i++)
-            {
-                float faderValue = 0.1f;
-                //get whichever hand is closer, then map that hand's offset vector's magnitude
-                Vector3 leftOffset = renderFaderPoints[i].transform.position - leftHandPos;
-                Vector3 rightOffset = renderFaderPoints[i].transform.position - rightHandPos;
-                float leftSqr = leftOffset.sqrMagnitude;
-                float rightSqr = rightOffset.sqrMagnitude;
-                if (leftSqr < rightSqr)
-                {
-                    float distMag = 324f - leftSqr;
-                    faderValue = Map(distMag, 324f, 0f, 0f, 1f);
-                } else 
-                {
-                    float distMag = 324f - rightSqr;
-                    faderValue = Map(distMag, 324f, 0f, 0f, 1f);
-                }
-                renderFaderValues[i] = faderValue;
-            }
+            RenderFade();
+            fixedUpdateCounter = 0;
         }
         
     }
@@ -404,4 +417,35 @@ public class BodyDataManager : MonoBehaviour
         _server?.Dispose();
         _server = null;
     }
+
+     void RenderFade()
+ {
+            Vector3 leftHandPos = mappedJointPositions[8];
+            Vector3 rightHandPos = mappedJointPositions[15];
+            for (int i = 0; i < 8; i++)
+            {
+                float faderValue = 0.1f;
+                //get whichever hand is closer, then map that hand's offset vector's magnitude
+                Vector3 leftOffset = renderFaderPoints[i].transform.localPosition - leftHandPos;
+                Vector3 rightOffset = renderFaderPoints[i].transform.localPosition - rightHandPos;
+                float leftSqr = leftOffset.sqrMagnitude;
+                float rightSqr = rightOffset.sqrMagnitude;
+                if (leftSqr < rightSqr)
+                {
+                    float distMag = 324f - leftSqr;
+                    faderValue = Map(distMag, 200f, 0f, 0f, 1f);
+                } else 
+                {
+                    float distMag = 324f - rightSqr;
+                    faderValue = Map(distMag, 200f, 0f, 0f, 1f);
+                }
+                renderFaderValues[i] = faderValue;
+            }
+
+
 }
+
+    }
+
+
+
