@@ -186,37 +186,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7195478940834806032}
+  - {fileID: 2092419900671726567}
+  - {fileID: 6938330435558190469}
+  - {fileID: 5415593901414720210}
+  - {fileID: 7902750936892286717}
+  - {fileID: 5662557135592060389}
+  - {fileID: 1645369550448227485}
+  - {fileID: 3566600362734131620}
+  - {fileID: 7921192380133084086}
+  - {fileID: 4659503310874879228}
+  - {fileID: 4938569575315726656}
+  - {fileID: 3682543215835790552}
+  - {fileID: 6175910465384277108}
+  - {fileID: 3049325501052147372}
+  - {fileID: 4209090994831195508}
+  - {fileID: 1568548687275252608}
+  - {fileID: 282494071844713025}
+  - {fileID: 5330831224371119653}
   - {fileID: 4605215238269843336}
   - {fileID: 4845246844735676365}
   - {fileID: 2856193634334633204}
   - {fileID: 7743409956922955522}
-  - {fileID: 3049325501052147372}
-  - {fileID: 6175910465384277108}
-  - {fileID: 3682543215835790552}
-  - {fileID: 1645369550448227485}
-  - {fileID: 5662557135592060389}
-  - {fileID: 8248313468308510867}
-  - {fileID: 7902750936892286717}
   - {fileID: 6185194859946607613}
-  - {fileID: 2092419900671726567}
-  - {fileID: 4209090994831195508}
-  - {fileID: 3566600362734131620}
   - {fileID: 6175129532346865084}
-  - {fileID: 6938330435558190469}
-  - {fileID: 1568548687275252608}
-  - {fileID: 5330831224371119653}
-  - {fileID: 7921192380133084086}
-  - {fileID: 4938569575315726656}
   - {fileID: 6690122470145972426}
-  - {fileID: 5415593901414720210}
-  - {fileID: 282494071844713025}
-  - {fileID: 4659503310874879228}
   - {fileID: 417648707421560520}
   - {fileID: 8566051417881681771}
   - {fileID: 7064803144246462698}
   - {fileID: 5742684886545351870}
   - {fileID: 9106258248449522016}
   - {fileID: 6766054850952118060}
+  - {fileID: 8248313468308510867}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -235,12 +235,19 @@ MonoBehaviour:
   showDemoCubes: 1
   demoCube: {fileID: 3591878993700696234, guid: 378d85756e267574ea697a4fd930969d, type: 3}
   cubeScale: 0.7
+  isUsingFullSkeleton: 0
   headTracker: {fileID: 0}
   handLeftTracker: {fileID: 0}
   handRightTracker: {fileID: 0}
+  shoulderLeftTracker: {fileID: 0}
+  shoulderRightTracker: {fileID: 0}
   pelvisTracker: {fileID: 0}
+  kneeleftTracker: {fileID: 0}
+  kneeRightTracker: {fileID: 0}
   footLeftTracker: {fileID: 0}
   footRightTracker: {fileID: 0}
+  isRenderFaderOn: 1
+  renderFaderPoints: []
   renderFaderPoint1: {fileID: 0}
   renderFaderPoint2: {fileID: 0}
   renderFaderPoint3: {fileID: 0}
@@ -249,6 +256,7 @@ MonoBehaviour:
   renderFaderPoint6: {fileID: 0}
   renderFaderPoint7: {fileID: 0}
   renderFaderPoint8: {fileID: 0}
+  renderFaderValues: []
   incomingPelvisPos: {x: 0, y: 0, z: 0}
   incomingRightHandPos: {x: 0, y: 0, z: 0}
   incomingLeftHandPos: {x: 0, y: 0, z: 0}

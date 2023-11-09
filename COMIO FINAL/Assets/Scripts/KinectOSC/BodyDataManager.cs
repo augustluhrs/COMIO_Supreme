@@ -32,7 +32,11 @@ public class BodyDataManager : MonoBehaviour
     public GameObject headTracker;
     public GameObject handLeftTracker;
     public GameObject handRightTracker;
+    public GameObject shoulderLeftTracker;
+    public GameObject shoulderRightTracker;
     public GameObject pelvisTracker;
+    public GameObject kneeleftTracker;
+    public GameObject kneeRightTracker;
     public GameObject footLeftTracker;
     public GameObject footRightTracker;
 
@@ -175,7 +179,7 @@ public class BodyDataManager : MonoBehaviour
         {
             for (int i = 0; i < 32; i++)
             {
-                if (i == 0 || i == 8 || i == 15 || i == 21 || i == 25 || i == 26) 
+                if (i == 0 || i == 5 || i == 8 || i == 12 || i == 15 || i == 19 || i == 21 || i == 23 || i == 25 || i == 26) 
                 {
                     GameObject cubeObject = Instantiate(demoCube, joints[i].transform.position, joints[i].transform.rotation);
                     cubeObject.transform.parent = joints[i].transform;
@@ -251,7 +255,7 @@ public class BodyDataManager : MonoBehaviour
                 { //for smaller joint range (just pelvis, hands, feet, head)
                     for (int i = 0; i < 32; i++)
                     {
-                        if (jointNames[i] == label && (i == 0 || i == 8 || i == 15 || i == 21 || i == 25 || i == 26)) 
+                        if (jointNames[i] == label && (i == 0 || i == 5 || i == 8 || i == 12 || i == 15 || i == 19 || i == 21 || i == 23 || i == 25 || i == 26)) 
                         {
                            Vector3 jPos = jointPositions[i];
                             if (param == "tx"){
@@ -335,7 +339,7 @@ public class BodyDataManager : MonoBehaviour
                 //map the positions to the calibrated scale
                 for (int i = 0; i < 32; i++)
                 {
-                    if (i == 0 || i == 8 || i == 15 || i == 21 || i == 25 || i == 26) 
+                    if  (i == 0 || i == 5 || i == 8 || i == 12 || i == 15 || i == 19 || i == 21 || i == 23 || i == 25 || i == 26) 
                     {
                         Vector3 jointPos = jointPositions[i];
                         float mapped_x, mapped_y, mapped_z;
@@ -347,7 +351,7 @@ public class BodyDataManager : MonoBehaviour
                     
                 }
                 for(int i = 0; i < 32; i++){
-                    if (i == 0 || i == 8 || i == 15 || i == 21 || i == 25 || i == 26) 
+                    if  (i == 0 || i == 5 || i == 8 || i == 12 || i == 15 || i == 19 || i == 21 || i == 23 || i == 25 || i == 26)
                     {
                         joints[i].transform.localPosition = mappedJointPositions[i];
                     }
@@ -378,6 +382,10 @@ public class BodyDataManager : MonoBehaviour
             pelvisTracker.transform.localPosition =  mappedJointPositions[0];
             handLeftTracker.transform.localPosition =  mappedJointPositions[15];
             handRightTracker.transform.localPosition = mappedJointPositions[8];
+            shoulderLeftTracker.transform.localPosition = mappedJointPositions[5];
+            shoulderRightTracker.transform.localPosition = mappedJointPositions[12];
+            kneeleftTracker.transform.localPosition = mappedJointPositions[19];
+            kneeRightTracker.transform.localPosition = mappedJointPositions[23];
             footLeftTracker.transform.localPosition = mappedJointPositions[21];
             footRightTracker.transform.localPosition = mappedJointPositions[25];
             
@@ -419,31 +427,30 @@ public class BodyDataManager : MonoBehaviour
     }
 
      void RenderFade()
- {
-            Vector3 leftHandPos = mappedJointPositions[8];
-            Vector3 rightHandPos = mappedJointPositions[15];
-            for (int i = 0; i < 8; i++)
+    {
+        Vector3 leftHandPos = mappedJointPositions[8];
+        Vector3 rightHandPos = mappedJointPositions[15];
+        for (int i = 0; i < 8; i++)
+        {
+            float faderValue = 0.1f;
+            //get whichever hand is closer, then map that hand's offset vector's magnitude
+            Vector3 leftOffset = renderFaderPoints[i].transform.localPosition - leftHandPos;
+            Vector3 rightOffset = renderFaderPoints[i].transform.localPosition - rightHandPos;
+            float leftSqr = leftOffset.sqrMagnitude;
+            float rightSqr = rightOffset.sqrMagnitude;
+            float distMag = 0f;
+            float sqrMagRange = 81f; //the squared magnitude distance from point to center
+            if (leftSqr < rightSqr)
             {
-                float faderValue = 0.1f;
-                //get whichever hand is closer, then map that hand's offset vector's magnitude
-                Vector3 leftOffset = renderFaderPoints[i].transform.localPosition - leftHandPos;
-                Vector3 rightOffset = renderFaderPoints[i].transform.localPosition - rightHandPos;
-                float leftSqr = leftOffset.sqrMagnitude;
-                float rightSqr = rightOffset.sqrMagnitude;
-                if (leftSqr < rightSqr)
-                {
-                    float distMag = 324f - leftSqr;
-                    faderValue = Map(distMag, 200f, 0f, 0f, 1f);
-                } else 
-                {
-                    float distMag = 324f - rightSqr;
-                    faderValue = Map(distMag, 200f, 0f, 0f, 1f);
-                }
-                renderFaderValues[i] = faderValue;
+                distMag = sqrMagRange- leftSqr;
+            } else 
+            {
+                distMag = sqrMagRange - rightSqr;
             }
-
-
-}
+            faderValue = Map(distMag, sqrMagRange, 0f, 0f, 1f);
+            renderFaderValues[i] = faderValue;
+        }
+        }
 
     }
 

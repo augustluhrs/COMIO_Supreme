@@ -61,7 +61,8 @@ public class CalibrationProfileManager : MonoBehaviour
         //get the calibration points from our parent, 
         //assumes avatarManager is on same child level as the calibrationPoints
         //**and that the calibrationPoints are the second child in the hierarchy (under floor)**
-        Transform cPoints = transform.parent.GetChild(1);
+        // Transform cPoints = transform.parent.GetChild(2);
+        Transform cPoints = transform.parent.Find("CalibrationPoints");
         for (int i = 0; i < 5; i++) //skips the floor6 b/c same as default vec3
         {
             calibrationPoints[i] = cPoints.GetChild(i).gameObject;

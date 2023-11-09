@@ -21,8 +21,9 @@ public class PS4Controller : MonoBehaviour
 
     public List<GameObject> toggleObjects; // Assign this list in the Inspector with all the GameObjects you want to toggle
     private bool isRandomToggleActive = false;
-    private Coroutine randomToggleCoroutine;
+    private bool isBackgroundUninitialized = false;
 
+    private Coroutine randomToggleCoroutine;
 
     private bool isOrthographic = false;
 
@@ -98,6 +99,12 @@ if (gamepad.buttonWest.wasPressedThisFrame)
         }
     }
 }
+
+
+        if (gamepad.buttonEast.wasPressedThisFrame)
+        {
+            ToggleCameraBackground();
+        }
 
 
 
@@ -255,6 +262,52 @@ private IEnumerator RandomToggleRoutine()
             }
         }
     }
+}
+
+
+private void ToggleCameraBackground()
+{
+    foreach (Camera cam in cameras)
+    {
+        if (isBackgroundUninitialized)
+        {
+            // Set to black with full transparency
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0, 0, 0, 0); // Black with alpha 0
+            if (volumeComponent.profile.TryGet<LiftGammaGain>(out var liftGammaGain)){
+                liftGammaGain.active = false;
+            }
+            if (volumeComponent.profile.TryGet<SplitToning>(out var splitToning)){
+                splitToning.active = false;
+            }
+             if (volumeComponent.profile.TryGet<ColorAdjustments>(out var colorAdjustments)){
+                colorAdjustments.active = false;
+            }
+            if (volumeComponent.profile.TryGet<FilmGrain>(out var filmGrain)){
+                filmGrain.active = false;
+            }
+        }
+        else
+        {
+            if (volumeComponent.profile.TryGet<LiftGammaGain>(out var liftGammaGain)){
+                liftGammaGain.active = true;
+            }
+            if (volumeComponent.profile.TryGet<SplitToning>(out var splitToning)){
+                splitToning.active = true;
+            }
+            if (volumeComponent.profile.TryGet<ColorAdjustments>(out var colorAdjustments)){
+                colorAdjustments.active = true;
+            }
+            if (volumeComponent.profile.TryGet<FilmGrain>(out var filmGrain)){
+                filmGrain.active = true;
+            }
+            // Set to Uninitialized
+            cam.clearFlags = CameraClearFlags.Nothing; // This is equivalent to 'Uninitialized' in the Camera UI
+        }
+    }
+
+    // Toggle the state
+    isBackgroundUninitialized = !isBackgroundUninitialized;
 }
 
 
