@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI; 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal; // This namespace is for URP's Volume
@@ -12,6 +13,8 @@ public class PS4Controller : MonoBehaviour
     public float rotateSpeed = 10f;
     public float orthoSizeChangeRate = 0.1f;
     public float effectStrengthChangeRate = 0.1f; // Rate at which the post-processing effect changes
+
+    public GameObject uiPanel; 
 
     public GameObject volumeGameObject; // Assign the GameObject with the Volume component in the Inspector
 
@@ -27,11 +30,22 @@ public class PS4Controller : MonoBehaviour
 
     private bool isOrthographic = false;
 
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+
     public CameraSwitcher cameraSwitcher;
+    // Assign this in the Inspector
+    private bool isPanelVisible = false;
 
     private void Start()
     {
         gamepad = Gamepad.current;
+
+        
+            originalPosition = transform.position;
+            originalRotation = transform.rotation;
+        
+
         if (gamepad == null)
         {
             Debug.LogWarning("No gamepad connected.");
@@ -59,10 +73,29 @@ public class PS4Controller : MonoBehaviour
     {
         if (gamepad == null) return;
 
+            if (gamepad.dpad.right.wasPressedThisFrame)
+        {
+            if (!isPanelVisible)
+            {
+                StartCoroutine(FadePanel(uiPanel, 0f, 1f, 5f)); // Fade in
+            }
+            else
+            {
+                StartCoroutine(FadePanel(uiPanel, 1f, 0f, 5f)); // Fade out
+            }
+
+            isPanelVisible = !isPanelVisible;
+        }
+
+    // if(gamepad.optionsButton.wasPressedThisFrame){
+    //     RestartScene();
+    // }
+
 
     // Toggle random activation state with the square button
-if (gamepad.buttonWest.wasPressedThisFrame)
-{
+    if (gamepad.buttonWest.wasPressedThisFrame)
+    {
+
     isRandomToggleActive = !isRandomToggleActive; // Toggle the state
 
     if (isRandomToggleActive)
@@ -99,6 +132,11 @@ if (gamepad.buttonWest.wasPressedThisFrame)
         }
     }
 }
+
+        if (gamepad.dpad.left.wasPressedThisFrame)
+        {
+            ResetCameraToOriginalPosition();
+        }
 
 
         if (gamepad.buttonEast.wasPressedThisFrame)
@@ -310,10 +348,40 @@ private void ToggleCameraBackground()
     isBackgroundUninitialized = !isBackgroundUninitialized;
 }
 
+    private IEnumerator FadePanel(GameObject panel, float startAlpha, float endAlpha, float duration)
+    {
+        if (panel != null)
+        {
+            CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+            if (canvasGroup == null)
+            {
+                canvasGroup = panel.AddComponent<CanvasGroup>();
+            }
+
+            float time = 0;
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+                float normalizedTime = time / duration; // 0 to 1 over duration
+                canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, normalizedTime);
+                yield return null;
+            }
+
+            canvasGroup.alpha = endAlpha;
+        }
+    }
+
+    private void RestartScene(){
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
 
-
-
-
+    private void ResetCameraToOriginalPosition()
+    {
+      
+        transform.position = originalPosition;
+        transform.rotation = originalRotation;
+        
+    }
 
 }
