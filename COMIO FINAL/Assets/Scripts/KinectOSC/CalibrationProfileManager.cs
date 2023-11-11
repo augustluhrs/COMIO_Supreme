@@ -39,16 +39,25 @@ public class CalibrationProfileManager : MonoBehaviour
     //calibrated range for mapping in BodyDataManager
     //default values used until calibration profile loaded or more specific values come in
     //in map, x values need to flip? TODO, might just work? will store kinect value regardless of polarity, but x_min is unity coord space (left)
-    public float kinect_x_min = 1.02f;
-    public float kinect_x_max = -1.19f;
-    public float kinect_y_min = -0.65f;
-    public float kinect_y_max = 1.07f;
-    public float kinect_z_min = 1.25f;
-    public float kinect_z_max = 3.76f;
+    // 209 calibration as of 11-10-23
+    public float kinect_x_min = 1.178f;
+    public float kinect_x_max = -1.214f;
+    public float kinect_y_min = -0.266f;
+    public float kinect_y_max = 1.758f;
+    public float kinect_z_min = 0.899f;
+    public float kinect_z_max = 3.311f;
+
+    // duncan studio calibration values:
+    // public float kinect_x_min = 1.02f;
+    // public float kinect_x_max = -1.19f;
+    // public float kinect_y_min = -0.65f;
+    // public float kinect_y_max = 1.07f;
+    // public float kinect_z_min = 1.25f;
+    // public float kinect_z_max = 3.76f;
     //the positions of the calibration points on the stage
     public float stage_x_min;
     public float stage_x_max;
-    public float stage_y_min;
+    public float stage_y_min = 0f;
     public float stage_y_max;
     public float stage_z_min;
     public float stage_z_max;

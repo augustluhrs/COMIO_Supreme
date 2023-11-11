@@ -287,12 +287,12 @@ MonoBehaviour:
   c_3_pos_kinect: {x: 0, y: 0, z: 0}
   c_4_pos_kinect: {x: 0, y: 0, z: 0}
   c_5_pos_kinect: {x: 0, y: 0, z: 0}
-  kinect_x_min: -1.25
-  kinect_x_max: 1.25
-  kinect_y_min: -0.75
-  kinect_y_max: 1.15
-  kinect_z_min: 1.25
-  kinect_z_max: 3.55
+  kinect_x_min: 1.178
+  kinect_x_max: -1.214
+  kinect_y_min: -0.266
+  kinect_y_max: 1.758
+  kinect_z_min: 0.899
+  kinect_z_max: 3.311
   stage_x_min: 0
   stage_x_max: 0
   stage_y_min: 0

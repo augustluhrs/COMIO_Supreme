@@ -439,7 +439,7 @@ public class BodyDataManager : MonoBehaviour
             float leftSqr = leftOffset.sqrMagnitude;
             float rightSqr = rightOffset.sqrMagnitude;
             float distMag = 0f;
-            float sqrMagRange = 200f; //the squared magnitude distance from point to center
+            float sqrMagRange = 324f; //the squared magnitude distance from point to center
             if (leftSqr < rightSqr)
             {
                 distMag = sqrMagRange- leftSqr;

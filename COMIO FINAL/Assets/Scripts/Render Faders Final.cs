@@ -21,6 +21,7 @@ public class RenderFadersFinal : MonoBehaviour
     public float fadeDuration = 0.4f;
     public float currentOpacity = 0.0f;
     public float lerpSpeed = 1.0f;
+    public float maxOpacity = 1.0f;
 
 
     public BodyDataManager bodydata;
@@ -50,6 +51,11 @@ public class RenderFadersFinal : MonoBehaviour
     {
     // Get the current render value from the data source.
     float renderValue = bodydata.renderFaderValues[index];
+
+    if (renderValue > maxOpacity)
+    {
+        renderValue = maxOpacity;    
+    }
 
     // Lerp the currentOpacity towards the renderValue to create a smooth transition.
     currentOpacity = Mathf.Lerp(currentOpacity, renderValue, Time.deltaTime * lerpSpeed);
